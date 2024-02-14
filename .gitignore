@@ -31,3 +31,8 @@
 *.out
 *.app
 .vscode/settings.json
+
+# all files that start with results
+results*
+.vscode/launch.json
+.vscode/tasks.json
