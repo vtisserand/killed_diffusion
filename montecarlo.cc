@@ -4,20 +4,26 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
+#include <cstdio>
+#include <string>
+// #include "logging.h" // use it if you want to log the results ( e.g. logging("results.csv", "S0,Price\n", S0, price);)
+// #include "logging.cpp"
 
 // TODO
-// Generaliser à une double no touch option (classic si L = None ou B = None);
 // Généraliser à un schéma d'Euler pour le modèle de Black-Scholes avec une
-// fonction de drift et de volatilité.
+// fonction de drift et de volatilité homogène: dS = b(S)* dt + sigma(S) * dW
+// Par exemple, pour le modèle de Black-Scholes, b(S) = r * S et sigma(S) = sigma * S
 
-double generate_ST(double S0, double r, double T, double sigma, int M)
+// Random number generator
+std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
+
+double generate_ST(double S0, double r, double T, double sigma, int N)
 {
     // Generate ST in a Geometric Brownian Motion model
-    std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
     std::normal_distribution<double> distribution(0.0, 1.0);
-    double dt = T / M;
+    double dt = T / N;
     double S = S0;
-    for (int i = 0; i < M; i++)
+    for (int i = 0; i < N; i++)
     {
         double dW = sqrt(dt) * distribution(generator);
         S *= exp((r - 0.5 * sigma * sigma) * dt + sigma * dW);
@@ -25,15 +31,14 @@ double generate_ST(double S0, double r, double T, double sigma, int M)
     return S;
 }
 
-std::vector<double> generate_path(double S0, double r, double T, double sigma, int M)
+std::vector<double> generate_path(double S0, double r, double T, double sigma, int N)
 {
     // Generate a stock price using the Geometric Brownian Motion model
-    std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
     std::normal_distribution<double> distribution(0.0, 1.0);
-    double dt = T / M;
+    double dt = T / N;
     std::vector<double> S;
     S.push_back(S0);
-    for (int i = 0; i < M; i++)
+    for (int i = 0; i < N; i++)
     {
         double dW = sqrt(dt) * distribution(generator);
         double S_new = S.back() * exp((r - 0.5 * sigma * sigma) * dt + sigma * dW);
@@ -42,40 +47,42 @@ std::vector<double> generate_path(double S0, double r, double T, double sigma, i
     return S;
 }
 
-double price_european_call(double S0, double K, double r, double T, double sigma, int M, int N)
+// Vanilla options
+double price_european_call(double S0, double K, double r, double T, double sigma, int N, int M)
 {
     double sum = 0.0;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < M; i++)
     {
-        double ST = generate_ST(S0, r, T, sigma, M);
+        double ST = generate_ST(S0, r, T, sigma, N);
         double payoff = std::max(ST - K, 0.0);
         sum += payoff;
     }
-    return exp(-r * T) * sum / N;
+    return exp(-r * T) * sum / M;
 }
 
-double price_european_put(double S0, double K, double r, double T, double sigma, int M, int N)
+double price_european_put(double S0, double K, double r, double T, double sigma, int N, int M)
 {
     double sum = 0.0;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < M; i++)
     {
-        double ST = generate_ST(S0, r, T, sigma, M);
+        double ST = generate_ST(S0, r, T, sigma, N);
         double payoff = std::max(K - ST, 0.0);
         sum += payoff;
     }
-    return exp(-r * T) * sum / N;
+    return exp(-r * T) * sum / M;
 }
 
-double price_barrier_call(double S0, double K, double r, double T, double sigma, int M, int N, double L)
+// Barrier options
+double price_barrier_call_up_and_out(double S0, double K, double r, double T, double sigma, int N, int M, double B)
 {
     double sum = 0.0;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < M; i++)
     {
-        std::vector<double> S = generate_path(S0, r, T, sigma, M);
+        std::vector<double> S = generate_path(S0, r, T, sigma, N);
         double payoff = 1;
         for (double s : S)
         {
-            if (s < L)
+            if (s > B)
             {
                 payoff = 0.0;
                 break;
@@ -87,43 +94,20 @@ double price_barrier_call(double S0, double K, double r, double T, double sigma,
         }
         sum += payoff;
     }
-    return exp(-r * T) * sum / N;
+    return exp(-r * T) * sum / M;
 }
 
-double price_barrier_put(double S0, double K, double r, double T, double sigma, int M, int N, double L)
+// Double no touch options (Barrier options with two barriers)
+double price_double_no_touch_call(double S0, double K, double r, double T, double sigma, int N, int M, double L, double B)
 {
     double sum = 0.0;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < M; i++)
     {
-        std::vector<double> S = generate_path(S0, r, T, sigma, M);
+        std::vector<double> S = generate_path(S0, r, T, sigma, N);
         double payoff = 1;
         for (double s : S)
         {
-            if (s < L)
-            {
-                payoff = 0.0;
-                break;
-            }
-        }
-        if (payoff == 1)
-        {
-            payoff = std::max(K - S.back(), 0.0);
-        }
-        sum += payoff;
-    }
-    return exp(-r * T) * sum / N;
-}
-
-double price_double_no_touch_call(double S0, double K, double r, double T, double sigma, int M, int N, double L, double H)
-{
-    double sum = 0.0;
-    for (int i = 0; i < N; i++)
-    {
-        std::vector<double> S = generate_path(S0, r, T, sigma, M);
-        double payoff = 1;
-        for (double s : S)
-        {
-            if (s < L || s > H)
+            if (s < L || s > B)
             {
                 payoff = 0.0;
                 break;
@@ -135,19 +119,19 @@ double price_double_no_touch_call(double S0, double K, double r, double T, doubl
         }
         sum += payoff;
     }
-    return exp(-r * T) * sum / N;
+    return exp(-r * T) * sum / M;
 }
 
-double price_double_no_touch_put(double S0, double K, double r, double T, double sigma, int M, int N, double L, double H)
+double price_double_no_touch_put(double S0, double K, double r, double T, double sigma, int N, int M, double L, double B)
 {
     double sum = 0.0;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < M; i++)
     {
-        std::vector<double> S = generate_path(S0, r, T, sigma, M);
+        std::vector<double> S = generate_path(S0, r, T, sigma, N);
         double payoff = 1;
         for (double s : S)
         {
-            if (s < L || s > H)
+            if (s < L || s > B)
             {
                 payoff = 0.0;
                 break;
@@ -159,16 +143,18 @@ double price_double_no_touch_put(double S0, double K, double r, double T, double
         }
         sum += payoff;
     }
-    return exp(-r * T) * sum / N;
+    return exp(-r * T) * sum / M;
 }
 
+
+// Emmanuel Gobet (2000): refining the approximation using a Bernoulli distribution to simulate the probability of hitting the barrier in-between two points of the path
 double probability_brownian_bridge_hit(
     double z1,
     double z2,
     double delta,
     double sigma,
-    bool a = true,
-    bool b = true,
+    bool a = true, // a = true if the barrier is active on the left
+    bool b = true, // b = true if the barrier is active on the right
     double a_value = 0.0,
     double b_value = 0.0,
     int k_limit = 1000)
@@ -184,7 +170,9 @@ double probability_brownian_bridge_hit(
         {
             return 0.0;
         }
-        return 1 - exp(-2 * (b_value - z1) * (b_value - z2) / (sigma * sigma * delta));
+        // BUG : j'ai ôté le 1-exp() car sinon on est sur une Bernoulli de paramètre 1-p...
+        // C'est une erreur dans le papier de Gobet (?) -> A vérifier (cohérence avec le papier de Gobet)
+        return exp(-2 * (b_value - z1) * (b_value - z2) / (sigma * z1 * sigma * z1 * delta));
     }
     else if (a && !b)
     {
@@ -197,7 +185,9 @@ double probability_brownian_bridge_hit(
         {
             return 0.0;
         }
-        return 1 - exp(-2 * (a_value - z1) * (a_value - z2) / (sigma * sigma * delta));
+        // BUG : j'ai ôté le 1-exp() car sinon on est sur une Bernoulli de paramètre 1-p...
+        // C'est une erreur dans le papier de Gobet (?) -> A vérifier (cohérence avec le papier de Gobet)
+        return exp(-2 * (a_value - z1) * (a_value - z2) / (sigma * z1 * sigma * z1 * delta));
     }
     else
     {
@@ -213,156 +203,103 @@ double probability_brownian_bridge_hit(
         double sum = 0.0;
         for (int k = -k_limit + 1; k < k_limit; k++)
         {
-            sum += exp(-2 * (k * (b_value - a_value) * (k * (b_value - a_value) + z2 - z1)) / (sigma * sigma * delta));
-            sum -= exp(-2 * ((k * (b_value - a_value) + z1 - b_value) * (k * (b_value - a_value) + z2 - b_value)) / (sigma * sigma * delta));
+            sum += exp(-2 * (k * (b_value - a_value) * (k * (b_value - a_value) + z2 - z1)) / (sigma * z1 * sigma * z1 * delta));
+            sum -= exp(-2 * ((k * (b_value - a_value) + z1 - b_value) * (k * (b_value - a_value) + z2 - b_value)) / (sigma * z1 * sigma * z1 * delta));
         }
 
         return 1 - sum;
     }
 }
 
-// 2ND VERSION : using a Bernoulli distribution to simulate the probability of hitting the barrier in between two points of the path
-
-double price_barrier_call_2(double S0, double K, double r, double T, double sigma, int M, int N, double L, int k_limit)
+// Barrier options
+double price_barrier_call_up_and_out_gobet(double S0, double K, double r, double T, double sigma, int N, int M, double B, int k_limit)
 {
+    std::ofstream file("debug_barrier.csv", std::ios_base::app);
     double sum = 0.0;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < M; i++)
     {
-        std::vector<double> S = generate_path(S0, r, T, sigma, M);
-        bool hit = false;
-        for (int j = 1; j < M; j++)
+        std::vector<double> S = generate_path(S0, r, T, sigma, N);
+        double payoff = 1;
+        for (int j = 1; j < N; j++)
         {
+            // 2/ Check if the barrier is hit between S[j-1] and S[j]
             double probability = probability_brownian_bridge_hit(
                 S[j - 1],
                 S[j],
-                T / M,
+                T / N,
                 sigma,
-                true,
                 false,
-                L,
+                true,
                 0.0,
+                B,
                 k_limit);
-            std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
-            std::bernoulli_distribution distribution(probability);
+            file << S[j - 1] << "," << S[j] << "," << probability << "\n";
+            // 1/ Check if S[j-1] hits the barrier L
+            if (S[j - 1] > B)
+            {
+                payoff = 0.0;
+                break;
+            }
 
+            std::bernoulli_distribution distribution(probability);
             if (distribution(generator))
             {
-                hit = true;
+                payoff = 0.0;
                 break;
             }
         }
-        if (!hit)
+        if (payoff == 1)
         {
-            sum += std::max(S.back() - K, 0.0);
+            payoff = std::max(S.back() - K, 0.0);
         }
+        sum += payoff;
     }
-    return exp(-r * T) * sum / N;
+    return exp(-r * T) * sum / M;
 }
 
-double price_barrier_put_2(double S0, double K, double r, double T, double sigma, int M, int N, double L, int k_limit)
+// Double no touch options (Barrier options with two barriers)
+double price_double_no_touch_call_gobet(double S0, double K, double r, double T, double sigma, int N, int M, double L, double B, int k_limit)
 {
+    std::ofstream file("debug_dnt.csv", std::ios_base::app);
     double sum = 0.0;
-    for (int i = 0; i < N; i++)
+    for (int i = 0; i < M; i++)
     {
-        std::vector<double> S = generate_path(S0, r, T, sigma, M);
-        bool hit = false;
-        for (int j = 1; j < M; j++)
+        std::vector<double> S = generate_path(S0, r, T, sigma, N);
+        double payoff = 1;
+        for (int j = 1; j < N; j++)
         {
+            // 2/ Check if the barrier is hit between S[j-1] and S[j]
             double probability = probability_brownian_bridge_hit(
                 S[j - 1],
                 S[j],
-                T / M,
-                sigma,
-                true,
-                false,
-                L,
-                0.0,
-                k_limit);
-            std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
-            std::bernoulli_distribution distribution(probability);
-
-            if (distribution(generator))
-            {
-                hit = true;
-                break;
-            }
-        }
-        if (!hit)
-        {
-            sum += std::max(K - S.back(), 0.0);
-        }
-    }
-    return exp(-r * T) * sum / N;
-}
-
-double price_double_no_touch_call_2(double S0, double K, double r, double T, double sigma, int M, int N, double L, double H, int k_limit)
-{
-    double sum = 0.0;
-    for (int i = 0; i < N; i++)
-    {
-        std::vector<double> S = generate_path(S0, r, T, sigma, M);
-        bool hit = false;
-        for (int j = 1; j < M; j++)
-        {
-            double probability = probability_brownian_bridge_hit(
-                S[j - 1],
-                S[j],
-                T / M,
+                T / N,
                 sigma,
                 true,
                 true,
                 L,
-                H,
+                B,
                 k_limit);
-            std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
-            std::bernoulli_distribution distribution(probability);
+            file << S[j - 1] << "," << S[j] << "," << probability << "\n";
 
+            // 1/ Check if S[j-1] hits the barrier L or B
+            if (S[j - 1] < L || S[j - 1] > B)
+            {
+                payoff = 0.0;
+                break;
+            }
+
+            std::bernoulli_distribution distribution(probability);
             if (distribution(generator))
             {
-                hit = true;
+                payoff = 0.0;
                 break;
             }
         }
-        if (!hit)
+        if (payoff == 1)
         {
-            sum += std::max(S.back() - K, 0.0);
+            payoff = std::max(S.back() - K, 0.0);
         }
+        sum += payoff;
     }
-    return exp(-r * T) * sum / N;
-}
-
-double price_double_no_touch_put_2(double S0, double K, double r, double T, double sigma, int M, int N, double L, double H, int k_limit)
-{
-    double sum = 0.0;
-    for (int i = 0; i < N; i++)
-    {
-        std::vector<double> S = generate_path(S0, r, T, sigma, M);
-        bool hit = false;
-        for (int j = 1; j < M; j++)
-        {
-            double probability = probability_brownian_bridge_hit(
-                S[j - 1],
-                S[j],
-                T / M,
-                sigma,
-                true,
-                true,
-                L,
-                H,
-                k_limit);
-            std::default_random_engine generator(std::chrono::system_clock::now().time_since_epoch().count());
-            std::bernoulli_distribution distribution(probability);
-
-            if (distribution(generator))
-            {
-                hit = true;
-                break;
-            }
-        }
-        if (!hit)
-        {
-            sum += std::max(K - S.back(), 0.0);
-        }
-    }
-    return exp(-r * T) * sum / N;
+    return exp(-r * T) * sum / M;
 }

@@ -32,7 +32,8 @@
 *.app
 .vscode/settings.json
 
-# all files that start with results
-results*
+# simulation files
+results_*
+debug_*
 .vscode/launch.json
 .vscode/tasks.json
