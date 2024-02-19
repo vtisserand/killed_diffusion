@@ -35,10 +35,12 @@
 # Simulation files
 results_*
 debug_*
+*.csv
+**/*.csv
 .vscode/launch.json
 .vscode/tasks.json
-simulation.dSYM/
-simulation
+**/simulation.dSYM/
+**/simulation
 
-# Mac OS stuff
+# macOS stuff
 *.DS_Store
