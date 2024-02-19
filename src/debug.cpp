@@ -4,9 +4,9 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include "montecarlo.cc"
-#include "closed_formula.cc"
-#include "logging.h"
+#include "montecarlo.cpp"
+#include "closed_formula.cpp"
+#include "logging.hpp"
 #include <cstdio>
 
 int main()
