@@ -32,8 +32,15 @@
 *.app
 .vscode/settings.json
 
-# simulation files
+# Simulation files
 results_*
 debug_*
+*.csv
+**/*.csv
 .vscode/launch.json
 .vscode/tasks.json
+**/simulation.dSYM/
+**/simulation
+
+# macOS stuff
+*.DS_Store

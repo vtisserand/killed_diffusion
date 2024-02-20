@@ -1,6 +1,6 @@
-#include "logging.h"
 #include <cstdarg>
 #include <fstream>
+#include "logging.hpp"
 
 void logging(const std::string &filename, const char *format, ...)
 {
