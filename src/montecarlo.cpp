@@ -60,18 +60,6 @@ double price_european_call(double S0, double K, double r, double T, double sigma
     return exp(-r * T) * sum / M;
 }
 
-double price_european_put(double S0, double K, double r, double T, double sigma, int N, int M)
-{
-    double sum = 0.0;
-    for (int i = 0; i < M; i++)
-    {
-        double ST = generate_ST(S0, r, T, sigma, N);
-        double payoff = std::max(K - ST, 0.0);
-        sum += payoff;
-    }
-    return exp(-r * T) * sum / M;
-}
-
 // Barrier options
 double price_barrier_call_up_and_out(double S0, double K, double r, double T, double sigma, int N, int M, double B)
 {
@@ -121,31 +109,6 @@ double price_double_no_touch_call(double S0, double K, double r, double T, doubl
     }
     return exp(-r * T) * sum / M;
 }
-
-double price_double_no_touch_put(double S0, double K, double r, double T, double sigma, int N, int M, double L, double B)
-{
-    double sum = 0.0;
-    for (int i = 0; i < M; i++)
-    {
-        std::vector<double> S = generate_path(S0, r, T, sigma, N);
-        double payoff = 1;
-        for (double s : S)
-        {
-            if (s < L || s > B)
-            {
-                payoff = 0.0;
-                break;
-            }
-        }
-        if (payoff == 1)
-        {
-            payoff = std::max(K - S.back(), 0.0);
-        }
-        sum += payoff;
-    }
-    return exp(-r * T) * sum / M;
-}
-
 
 // Emmanuel Gobet (2000): refining the approximation using a Bernoulli distribution to simulate the probability of hitting the barrier in-between two points of the path
 double probability_brownian_bridge_hit(
@@ -214,7 +177,9 @@ double probability_brownian_bridge_hit(
 // Barrier options
 double price_barrier_call_up_and_out_gobet(double S0, double K, double r, double T, double sigma, int N, int M, double B, int k_limit)
 {
+    bool verbose = false; // activate this for the debug.cpp file (to generate the debug_barrier.csv file)
     std::ofstream file("debug_barrier.csv", std::ios_base::app);
+
     double sum = 0.0;
     for (int i = 0; i < M; i++)
     {
@@ -233,7 +198,12 @@ double price_barrier_call_up_and_out_gobet(double S0, double K, double r, double
                 0.0,
                 B,
                 k_limit);
-            file << S[j - 1] << "," << S[j] << "," << probability << "\n";
+
+            if (verbose)
+            {
+                file << S[j - 1] << "," << S[j] << "," << probability << "\n";
+            }
+
             // 1/ Check if S[j-1] hits the barrier L
             if (S[j - 1] > B)
             {
@@ -260,7 +230,9 @@ double price_barrier_call_up_and_out_gobet(double S0, double K, double r, double
 // Double no touch options (Barrier options with two barriers)
 double price_double_no_touch_call_gobet(double S0, double K, double r, double T, double sigma, int N, int M, double L, double B, int k_limit)
 {
+    bool verbose = false; // activate this for the debug.cpp file (to generate the debug_dnt.csv file)
     std::ofstream file("debug_dnt.csv", std::ios_base::app);
+
     double sum = 0.0;
     for (int i = 0; i < M; i++)
     {
@@ -279,7 +251,10 @@ double price_double_no_touch_call_gobet(double S0, double K, double r, double T,
                 L,
                 B,
                 k_limit);
-            file << S[j - 1] << "," << S[j] << "," << probability << "\n";
+            if (verbose)
+            {
+                file << S[j - 1] << "," << S[j] << "," << probability << "\n";
+            }
 
             // 1/ Check if S[j-1] hits the barrier L or B
             if (S[j - 1] < L || S[j - 1] > B)

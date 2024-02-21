@@ -124,5 +124,3 @@ int main()
 
 }
 
-// Refactoring :
-
