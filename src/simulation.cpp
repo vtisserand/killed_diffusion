@@ -4,8 +4,8 @@
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include "montecarlo.cc"
-#include "closed_formula.cc"
+#include "montecarlo.cpp"
+#include "closed_formula.cpp"
 #include <cstdio>
 
 int main()
