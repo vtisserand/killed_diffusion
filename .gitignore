@@ -44,3 +44,6 @@ debug_*
 
 # macOS stuff
 *.DS_Store
+
+# misc
+nbs/.ipynb_checkpoints/

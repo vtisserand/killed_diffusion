@@ -1,16 +1,11 @@
-// TODO!
-// illustrate the weak / strong convergence of the Euler scheme using the 2 methods of the article
-// 1/ Discrete Euler scheme without correction
-// 2/ Discrete Euler scheme with correction (brownian bridge)
-
 #include <vector>
 #include <random>
 #include <chrono>
 #include <cmath>
 #include <fstream>
 #include <iostream>
-#include "montecarlo.cpp"
-#include "closed_formula.cpp"
+#include "montecarlo.hpp"
+#include "closed_formula.hpp"
 #include <cstdio>
 
 int main()
