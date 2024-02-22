@@ -101,10 +101,6 @@ double price_double_no_touch_call(double S0, double K, double r, double T, doubl
                 break;
             }
         }
-        if (payoff == 1)
-        {
-            payoff = std::max(S.back() - K, 0.0);
-        }
         sum += payoff;
     }
     return exp(-r * T) * sum / M;
@@ -269,10 +265,6 @@ double price_double_no_touch_call_gobet(double S0, double K, double r, double T,
                 payoff = 0.0;
                 break;
             }
-        }
-        if (payoff == 1)
-        {
-            payoff = std::max(S.back() - K, 0.0);
         }
         sum += payoff;
     }

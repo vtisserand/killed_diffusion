@@ -36,20 +36,12 @@ PYBIND11_MODULE(killed_diffusion, m) {
           "Price European call option using Monte Carlo simulation",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("N"), py::arg("M"));
 
-    m.def("price_european_put", &price_european_put, 
-          "Price European put option using Monte Carlo simulation",
-          py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("N"), py::arg("M"));
-
     m.def("price_barrier_call_up_and_out", &price_barrier_call_up_and_out, 
           "Price barrier call option using Monte Carlo simulation",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("N"), py::arg("M"), py::arg("B"));
 
     m.def("price_double_no_touch_call", &price_double_no_touch_call, 
           "Price double no-touch call option using Monte Carlo simulation",
-          py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("N"), py::arg("M"), py::arg("L"), py::arg("B"));
-
-    m.def("price_double_no_touch_put", &price_double_no_touch_put, 
-          "Price double no-touch put option using Monte Carlo simulation",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("N"), py::arg("M"), py::arg("L"), py::arg("B"));
 
     m.def("probability_brownian_bridge_hit", &probability_brownian_bridge_hit, 
