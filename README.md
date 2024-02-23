@@ -1,12 +1,8 @@
-# killed_diffusion
+# Killed diffusion and pricing path-dependent options
 
-- [x] Pricing du call / barrière / double no touch (put/call) par Monte Carlo
-- [x] Simulation file -> storing the results
-- [x] Revert to using functional programming (bouuuu les classes)
-- [x] Plotting Jupyter notebook
-- [x] Debugger la fonction barrier call v2 (il y a une erreur quelque part) put + call (bug r -> r*x, sigma -> sigma*x dans le modèle de black scholes)
-- [x] Sanity check les autres fonctions existantes (cf. plotting notebook)
-- [x] Dev les closed formula price (quand ils existent)
+We implement a discrete and a continuous Euler scheme to compute payoffs of the form $\mathbb{E}\left[\mathbbm{1}_{T < \tau} f(X_T)\right].$, where $\tau \coloneqq \inf\{t > 0 : X_t \notin D\}$ is a stopping time for when the diffusion exits a domain $D$.
+
+![Call up-and-out price under Black-Scholes](report/img/cuo_mc.pdf)
 
 # TO-DOs
 
@@ -21,5 +17,7 @@
 To expose the C++ functions in Python through the killed_diffusion module, we run the following command:
 
 ```console
-g++ -O3 -Wall -shared -std=c++11 -fPIC -Wl,-undefined,dynamic_lookup `python3 -m pybind11 --includes` src/closed_formula.cpp src/montecarlo.cpp src/wrapper.cpp -o killed_diffusion/killed_diffusion`python3-config --extension-suffix`
+g++ -O3 -Wall -shared -std=c++11 -fPIC -Wl,-undefined,dynamic_lookup `python3 -m pybind11 --includes` \
+src/closed_formula.cpp src/montecarlo.cpp src/wrapper.cpp -o \
+killed_diffusion/killed_diffusion`python3-config --extension-suffix`
 ```
