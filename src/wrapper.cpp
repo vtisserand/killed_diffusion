@@ -19,10 +19,6 @@ PYBIND11_MODULE(killed_diffusion, m) {
           "Calculate barrier call option price using Black-Scholes formula",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("B"));
 
-    m.def("bs_double_no_touch_call", &bs_double_no_touch_call, 
-          "Calculate double no-touch call option price using Black-Scholes formula",
-          py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("L"), py::arg("B"));
-
       m.def("bs_dnt", &bs_dnt, 
           "Calculate double no-touch option price using Black-Scholes formula",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("L"), py::arg("B"));
