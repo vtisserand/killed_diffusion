@@ -1,0 +1,30 @@
+In this study, we implement two numerical schemes for stochastic differential equations where the diffusion stops if it escapes from a defined domain. Theoretical results are given and sketches of the proofs are highlighted. We apply these results to a quantitative finance problem: the pricing of path-dependent option, in particular we play with an up-and-out call and a double no-touch call. The code is made public and accessible in a \href{https://github.com/vtisserand/killed_diffusion}{GitHub repository}.
+
+\section{Killed diffusion, simulation schemes, what are we talking about?}
+
+We are investigating a paper from Emmanuel Gobet published in 2000 \cite{gobet2000weak}. We give a short finance introduction on some exotic options before providing proofs and delving into numerical schemes to approximate such payoffs.
+
+\subsection{Getting started -- why?}
+
+We are interested in a path-dependent payoff on an asset with diffusion $(X_t)_{0\leq t \leq T}$.
+In particular, we kill the diffusion when it leaves the open set $D$.\newline
+
+With $\tau \coloneqq \inf\{t > 0 : X_t \notin D\}$, this leads to the computation of $\mathbb{E}\left[\mathbbm{1}_{T < \tau} f(X_T)\right].$ The direct application in finance is with barrier and digital options that pay respectively the underlying asset, one unit of a specified currency, conditional on the barrier levels not having been broken.
+
+
+Barrier options are either up, down, and in, out: an up-and-out barrier option with barrier $B$ leads to the boundary condition $V(B, t) = 0 \quad \forall t \leq T.$ With $D = \left(-\infty, B\right]$,
+the risk-neutral evaluation of the up-and-out call gives a price at time $t$: \[C_{up-out } = \mathbb{E}^{\mathbb{Q}}\left[e^{-\int_t^T r_s ds} (S_T-K)^{+} \mathbbm{1}_{T < \tau} \vert \mathcal{F}_t\right]\]
+
+where $\tau = \inf\{t > 0 : S_t \notin D\} = \inf\{t > 0 : S_t > B\}$ if we make the assumption that $S_0 \leq B$.
+
+Similarly, we can define an up-and-in call option using $D = \left[B, +\infty\right)$, usually with $S_0 \geq B$. Note that if $K \geq B$, the option simply becomes a vanilla call option of strike $K$ and maturity $T$.
+
+For simplicity, we write $\mathbb{E}(.)$ as the expectation taken under risk-neutral measure $\mathbb{Q}$.\\
+
+Overall, being able to study such payoffs opens the \textbf{realm of barrier options} as well as no-touch and one-touch options that are some path-dependent \textbf{binary options} -- the payoff is either $\$1M$ or $\$0$ based on a condition (\textit{e.g.} the EURUSD price remained under $1.087$ up until maturity of the option) being filled: these are high leverage speculative instruments that can lead to significant gains for those who master their use.\\
+
+The paper implements two discretisation schemes to price such payoffs using Monte Carlo methods: a continuous Euler scheme and a discrete Euler scheme. We will be implementing those algorithms and running a set of experiments to evaluate the claims of the paper: do we actually observe a $o(N^{-1})$ convergence for the continuous scheme while only a $o(N^{-1/2})$ for the discrete scheme? How do the simulation prices compare to the theoretical closed-form formulas under Black-Scholes dynamics?
+
+\input{payoffs_derivation}
+
+

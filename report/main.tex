@@ -1,0 +1,100 @@
+\documentclass[english, a4paper, 12pt]{article}
+
+
+\usepackage[utf8]{inputenc}
+\usepackage[toc,page]{appendix}
+\usepackage[skip=0.75\baselineskip plus 2pt]{parskip}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[dvipsnames]{xcolor}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{mathtools}
+\usepackage{bbm}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{wrapfig}
+\usepackage{sidecap}
+\usepackage{tikz}
+\usepackage{enumitem}
+\usepackage{tabularray}
+\usepackage{changepage}
+\usepackage[skip=0.5\baselineskip]{caption}
+\usepackage{subcaption}
+\usepackage{import}
+\usepackage{geometry}
+\geometry{vmargin=2.5cm}
+\usepackage[toc,page]{appendix}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=teal,
+    citecolor = teal,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    pdfpagemode=FullScreen,
+    }
+% \usepackage{cleveref}
+% \usepackage[useregional]{datetime2}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}{Proposition}[theorem]
+\newtheorem{corollary}{Corollary}[theorem]
+\newtheorem{lemma}[theorem]{Lemma}
+
+
+% Tables stuff
+\usepackage{pifont}
+\usepackage{xcolor}
+\usepackage{breqn}
+\usepackage{booktabs}
+\newcommand{\cmark}{\textcolor{green!80!black}{\ding{51}}}
+\newcommand{\xmark}{\textcolor{red}{\ding{55}}}
+\usepackage{multirow}
+
+% Bibliography stuff
+% \usepackage{natbib}
+\usepackage[
+backend=biber,
+style=alphabetic,
+sorting=ynt,
+natbib=true
+]{biblatex}
+
+\addbibresource{biblio.bib}
+
+
+
+\title{Killed diffusion -- On Monte Carlo methods to price some path-dependent payoffs}
+\author{Vivien Tisserand, Clément Simon}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% \input{killed_diffusion}
+
+\tableofcontents
+
+\input{summary}
+
+\newpage
+
+\input{monte_carlo}
+
+\newpage
+
+\input{simulations}
+
+\newpage
+
+\input{appendix}
+
+\newpage
+
+\printbibliography
+
+
+\end{document}

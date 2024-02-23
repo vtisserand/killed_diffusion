@@ -1,0 +1,185 @@
+\begin{appendices}
+
+\section{Call up-and-out price derivation}
+\label{appendix:a}
+
+\begin{proof}\footnote{This proof is inspired by what is highlighted in \url{https://personal.ntu.edu.sg/nprivault/MA5182/barrier-options.pdf}}
+
+Let's take a deep breath and expand the barrier replication cost:\\
+
+$\mathrm{e}^{-(T-t) r} \mathbb{E}\left[\left(S_{T}-K\right)^{+} \mathbbm{1}_{\left\{M_{0}^{T}<B\right\}} \mid \mathcal{F}_{t}\right]$
+
+$$
+\begin{aligned}
+& =\mathrm{e}^{-(T-t) r} \mathbb{E}\left[\left(S_{T}-K\right)^{+} \mathbbm{1}_{\left\{M_{0}^{t}<B\right\}} \mathbbm{1}_{\left\{M_{t}^{T}<B\right\}} \mid \mathcal{F}_{t}\right] \\
+& =\mathrm{e}^{-(T-t) r} \mathbbm{1}_{\left\{M_{0}^{t}<B\right\}} \mathbb{E}\left[\left(S_{T}-K\right)^{+} \mathbbm{1}\left\{\operatorname{Max}_{t \leq r \leq T} S_{r}<B\right\} \mid \mathcal{F}_{t}\right] \\
+\end{aligned}
+$$
+
+Since, $\mathbbm{1}_{\left\{M_{0}^{t}<B\right\}}$ is $\mathcal{F}_{t}$-measurable, we can take it out of the expectation. We then have:
+
+$$
+\begin{aligned}
+& =\mathrm{e}^{-(T-t) r} \mathbbm{1}_{\left\{M_{0}^{t}<B\right\}} \mathbb{E}\left[\left(x \frac{S_{T}}{S_{t}}-K\right)^{+} \mathbbm{1}_{\left\{x \operatorname{Max}_{t \leq r \leq T} \frac{S_{r}}{S_{t}}>B\right\}}\right]_{x=S_{t}} \\
+\end{aligned}
+$$
+
+In the case of the Black-Scholes model, we have an explicit expression for the diffusion:
+$ \frac{S_{r}}{S_{t}} =\mathrm{e}^{(r-\sigma^{2} / 2)(r-t)+\sigma\left(W_{r}-W_{t}\right)} $
+
+$$
+\begin{aligned}
+& =\mathrm{e}^{-(T-t) r} \mathbbm{1}_{\left\{M_{0}^{t}<B\right\}} \mathbb{E}\left[\left(x \frac{S_{T-t}}{S_0}-K\right)^{+} \mathbbm{1}_{\left\{x \operatorname{Max}_{0 \leq r \leq T-t} \frac{S_{r}}{S_0}<B\right\}}\right] . \\
+& =\mathrm{e}^{-(T-t) r} \mathbbm{1}_{\left\{M_{0}^{t}<B\right\}} \mathbb{E}\left[\left(x \mathrm{e}^{\sigma \widetilde{W}_{T-t}}-K\right)^{+} \mathbbm{1}\left\{_{x \operatorname{Max}_{0 \leq r \leq T-t}} \mathrm{e}^{\sigma \widetilde{W}_{r}}<B\right\}\right]_{x=S_{t}} . \\
+\end{aligned}
+$$
+
+where $\widetilde{W}_{t} = W_t + \mu t$ and $\mu:=-\frac{2r-\sigma^2}{2\sigma}$.
+
+
+Therefore, introducing the following process:
+$$
+\widehat{X}_{0}^{T}=\operatorname{Max}_{t \in[0, T]} \widetilde{W}=\operatorname{Max}_{t \in[0, T]}\left(W_{t}+\mu t\right)
+$$
+
+We have:
+
+$$
+\begin{aligned}
+\mathbb{E}\left[\left(S_{T}-K\right)^{+} \mathbbm{1}_{\left\{M_{0}^{T}<B\right\}}\right]
+& =\mathbb{E}\left[\left(S_{0} \mathrm{e}^{\sigma \widetilde{W}_{T}}-K\right) \mathbbm{1}\left\{S_{0} \mathrm{e}^{\left.\sigma \widetilde{W}_{T>K}\right\}}\right\} {\mathbbm{1}}\left\{S_{0} \mathrm{e}^{\sigma \widehat{X}_{0}^{T}}<B\right\}\right] \\
+& =\int_{-\infty}^{\infty} \int_{-\infty}^{\infty}\left(S_{0} \mathrm{e}^{\sigma y}-K\right) \mathbbm{1}_{\left\{S_{0} \mathrm{e}^{\sigma y}>K\right\}} \mathbbm{1}_{\left\{S_{0} \mathrm{e}^{\sigma x}<B\right\}} \mathrm{d} \mathbb{P}\left(\widehat{X}_{0}^{T} \leq x, \widetilde{W}_{T} \leq y\right) \\
+& =\int_{-\infty}^{\infty} \int_{-\infty}^{\infty}\left(S_{0} \mathrm{e}^{\sigma y}-K\right) \mathbbm{1}_{\left\{\sigma y>\log \left(K / S_{0}\right)\right\}} \mathbbm{1}_{\left\{\sigma x<\log \left(B / S_{0}\right)\right\}} \varphi_{\widehat{X}_{T}, \widetilde{W}_{T}}(x, y) d x d y \\
+& =\int_{-\infty}^{\infty} \int_{-\infty}^{\infty}\left(S_{0} \mathrm{e}^{\sigma y}-K\right) \mathbbm{1}_{\left\{\sigma y>\log \left(K / S_{0}\right)\right\}} \mathbbm{1}_{\left\{\sigma x<\log \left(B / S_{0}\right)\right\}} \mathbbm{1}_{\{y \vee 0<x\}} \\ & \times \varphi_{\widehat{X}_{T}, \widetilde{W}_{T}}(x, y) d x d y \\
+& =\frac{1}{T^{3 / 2}} \sqrt{\frac{2}{\pi}} \int_{\sigma^{-1} \log \left(K / S_{0}\right)}^{\sigma^{-1} \log \left(B / S_{0}\right)} \int_{y \vee 0}^{\sigma^{-1} \log \left(B / S_{0}\right)}\left(S_{0} \mathrm{e}^{\sigma y}-K\right)(2 x-y) \\ & \times \mathrm{e}^{-\mu^{2} T / 2+\mu y-(2 x-y)^{2} /(2 T)} d x d y \\
+& =\frac{\mathrm{e}^{-\mu^{2} T / 2}}{T^{3 / 2}} \sqrt{\frac{2}{\pi}} \int_{\sigma^{-1} \log \left(K / S_{0}\right)}^{\sigma^{-1} \log \left(B / S_{0}\right)}\left(S_{0} \mathrm{e}^{\sigma y}-K\right) \mathrm{e}^{\mu y-y^{2} /(2 T)} \\
+& \times \int_{y \vee 0}^{\sigma^{-1} \log \left(B / S_{0}\right)}(2 x-y) \mathrm{e}^{2 x(y-x) / T} d x d y
+\end{aligned}
+$$
+
+
+where $\varphi_{M_{0}^{T}, S_{T}}$ is the joint probability density function of $\left(M_{0}^{T}, S_{T}\right)$, which satisfies
+
+$$
+\mathbb{P}\left(M_{0}^{T} \leq x \text { and } S_{T} \leq y\right)=\int_{0}^{x} \int_{0}^{y} \varphi_{M_{0}^{T}, S_{T}}(u, v) d u d v, \quad x, y \geq 0 .
+$$
+
+If $B \geq K$ and $B \geq S_{0}$ (otherwise the option price is 0 ), with $\mu:=r / \sigma-\sigma / 2$ and $y \vee 0=\operatorname{Max}(y, 0)$. Letting $a:=y \vee 0$ and $b:=\sigma^{-1} \log \left(B / S_{0}\right)$, we have
+
+$$
+\begin{aligned}
+\int_{a}^{b}(2 x-y) \mathrm{e}^{2 x(y-x) / T} d x & =\int_{a}^{b}(2 x-y) \mathrm{e}^{2 x(y-x) / T} d x \\
+& =-\frac{T}{2}\left[\mathrm{e}^{2 x(y-x) / T}\right]_{x=a}^{x=b} \\
+& =\frac{T}{2}\left(\mathrm{e}^{2 a(y-a) / T}-\mathrm{e}^{2 b(y-b) / T}\right) \\
+& =\frac{T}{2}\left(\mathrm{e}^{2(y \vee 0)(y-y \vee 0) / T}-\mathrm{e}^{2 b(y-b) / T}\right) \\
+& =\frac{T}{2}\left(1-\mathrm{e}^{2 b(y-b) / T}\right)
+\end{aligned}
+$$
+
+hence, letting $c:=\sigma^{-1} \log \left(K / S_{0}\right)$, we obtain
+
+$$
+\begin{aligned}
+\mathbb{E} & {\left[\left(S_{T}-K\right)^{+} \mathbbm{1}_{\left\{M_{0}^{T}<B\right\}}\right] } = \\
+& \frac{\mathrm{e}^{-\mu^{2} T / 2}}{\sqrt{2 \pi T}} \int_{c}^{b}\left(S_{0} \mathrm{e}^{\sigma y}-K\right) \mathrm{e}^{\mu y-y^{2} /(2 T)}\left(1-\mathrm{e}^{2 b(y-b) / T}\right) d y = \\
+& S_{0} \mathrm{e}^{-\mu^{2} T / 2} \frac{1}{\sqrt{2 \pi T}} \int_{c}^{b} \mathrm{e}^{(\sigma+\mu) y-y^{2} /(2 T)}\left(1-\mathrm{e}^{2 b(y-b) / T}\right) d y \\
+& -K \mathrm{e}^{-\mu^{2} T / 2} \frac{1}{\sqrt{2 \pi T}} \int_{c}^{b} \mathrm{e}^{\mu y-y^{2} /(2 T)}\left(1-\mathrm{e}^{2 b(y-b) / T}\right) d y = \\
+& S_{0} \mathrm{e}^{-\mu^{2} T / 2} \frac{1}{\sqrt{2 \pi T}} \int_{c}^{b} \mathrm{e}^{(\sigma+\mu) y-y^{2} /(2 T)} d y \\
+& -S_{0} \mathrm{e}^{-\mu^{2} T / 2-2 b^{2} / T} \frac{1}{\sqrt{2 \pi T}} \int_{c}^{b} \mathrm{e}^{(\sigma+\mu+2 b / T) y-y^{2} /(2 T)} d y \\
+& -K \mathrm{e}^{-\mu^{2} T / 2} \frac{1}{\sqrt{2 \pi T}} \int_{c}^{b} \mathrm{e}^{\mu y-y^{2} /(2 T)} d y \\
+& +K \mathrm{e}^{-\mu^{2} T / 2-2 b^{2} / T} \frac{1}{\sqrt{2 \pi T}} \int_{c}^{b} \mathrm{e}^{(\mu+2 b / T) y-y^{2} /(2 T)} d y .
+\end{aligned}
+$$
+
+$$
+\begin{aligned}
+\mathrm{e}^{-r T} \mathbb{E} & {\left[\left(S_{T}-K\right)^{+} \mathbbm{1}_{\left\{M_{0}^{T}<B\right\}}\right] } = \\
+& S_{0} \mathrm{e}^{-\left(r+\mu^{2} / 2\right) T+(\sigma+\mu)^{2} T / 2}\left(\Phi\left(\frac{-c+(\sigma+\mu) T}{\sqrt{T}}\right)-\Phi\left(\frac{-b+(\sigma+\mu) T}{\sqrt{T}}\right)\right) \\
+& \left.-S_{0} \mathrm{e}^{-\left(r+\mu^{2} / 2\right) T-2 b^{2} / T+(\sigma+\mu+2 b / T)^{2} T / 2}\right) \\
+& \quad \times\left(\Phi\left(\frac{-c+(\sigma+\mu+2 b / T) T}{\sqrt{T}}\right)-\Phi\left(\frac{-b+(\sigma+\mu+2 b / T) T}{\sqrt{T}}\right)\right) \\
+& -K \mathrm{e}^{-r T}\left(\Phi\left(\frac{-c+\mu T}{\sqrt{T}}\right)-\Phi\left(\frac{-b+\mu T}{\sqrt{T}}\right)\right) \\
+& +K \mathrm{e}^{-\left(r+\mu^{2} / 2\right) T-2 b^{2} / T+(\mu+2 b / T)^{2} T / 2} \\
+& \times\left(\Phi\left(\frac{-c+(\mu+2 b / T) T}{\sqrt{T}}\right)-\Phi\left(\frac{-b+(\mu+2 b / T) T}{\sqrt{T}}\right)\right) \\
+& = S_{0}\left(\Phi\left(\delta_{+}^{T}\left(\frac{S_{0}}{K}\right)\right)-\Phi\left(\delta_{+}^{T}\left(\frac{S_{0}}{B}\right)\right)\right) \\
+& -S_{0} \mathrm{e}^{-\left(r+\mu^{2} / 2\right) T-2 b^{2} / T+(\sigma+\mu+2 b / T)^{2} T / 2}\left(\Phi\left(\delta_{+}^{T}\left(\frac{B^{2}}{K S_{0}}\right)\right)-\Phi\left(\delta_{+}^{T}\left(\frac{B}{S_{0}}\right)\right)\right) \\
+& -K \mathrm{e}^{-r T}\left(\Phi\left(\delta_{-}^{T}\left(\frac{S_{0}}{K}\right)\right)-\Phi\left(\delta_{-}^{T}\left(\frac{S_{0}}{B}\right)\right)\right) \\
+& +K \mathrm{e}^{-\left(r+\mu^{2} / 2\right) T-2 b^{2} T+(\mu+2 b / T)^{2} T / 2}\left(\Phi\left(\delta_{-}\left(\frac{B^{2}}{K S_{0}}\right)\right)-\Phi\left(\delta_{-}\left(\frac{B}{S_{0}}\right)\right)\right),
+\end{aligned}
+$$
+
+$0 \leq x \leq B$, where $\delta_{ \pm}^{T}(s)$ is defined above.
+
+Using the fact that:
+
+$$
+-T\left(r+\frac{\mu^{2}}{2}\right)-2 \frac{b^{2}}{T}+\frac{T}{2}\left(\sigma+\mu+\frac{2 b}{T}\right)^{2}=2 b\left(\frac{r}{\sigma}+\frac{\sigma}{2}\right)=\left(1+\frac{2 r}{\sigma^{2}}\right) \log \frac{B}{S_{0}},
+$$
+and
+$$
+-T\left(r+\frac{\mu^{2}}{2}\right)-2 \frac{b^{2}}{T}+\frac{T}{2}\left(\mu+\frac{2 b}{T}\right)^{2}=-r T+2 \mu b=-r T+\left(-1+\frac{2 r}{\sigma^{2}}\right) \log \frac{B}{S_{0}}
+$$
+
+this yields:
+
+
+$$
+\begin{aligned}
+\mathrm{e}^{-r T} \mathbb{E}^{*}\left[\left(S_{T}-K\right)^{+} \mathbbm{1}\left\{M_{0}^{T}<B\right\}\right]
+&= S_{0}\left(\Phi\left(\delta_{+}^{T}\left(\frac{S_{0}}{K}\right)\right)-\Phi\left(\delta_{+}^{T}\left(\frac{S_{0}}{B}\right)\right)\right) \\
+&-\mathrm{e}^{-r T} K\left(\Phi\left(\delta_{-}^{T}\left(\frac{S_{0}}{K}\right)\right)-\Phi\left(\delta_{-}^{T}\left(\frac{S_{0}}{B}\right)\right)\right) \\
+&-B\left(\frac{B}{S_{0}}\right)^{2 r / \sigma^{2}}\left(\Phi\left(\delta_{+}^{T}\left(\frac{B^{2}}{K S_{0}}\right)\right)-\Phi\left(\delta_{+}^{T}\left(\frac{B}{S_{0}}\right)\right)\right) \\
+&+\mathrm{e}^{-r T} K\left(\frac{S_{0}}{B}\right)^{1-2 r / \sigma^{2}}\left(\Phi\left(\delta_{-}^{T}\left(\frac{B^{2}}{K S_{0}}\right)\right)-\Phi\left(\delta_{-}^{T}\left(\frac{B}{S_{0}}\right)\right)\right) \\
+&= S_{0}\left(\Phi\left(\delta_{+}^{T}\left(\frac{S_{0}}{K}\right)\right)-\Phi\left(\delta_{+}^{T}\left(\frac{S_{0}}{B}\right)\right)\right) \\
+&-S_{0}\left(\frac{B}{S_{0}}\right)^{1+2 r / \sigma^{2}}\left(\Phi\left(\delta_{+}^{T}\left(\frac{B^{2}}{K S_{0}}\right)\right)-\Phi\left(\delta_{+}^{T}\left(\frac{B}{S_{0}}\right)\right)\right) \\
+&-\mathrm{e}^{-r T} K\left(\Phi\left(\delta_{-}^{T}\left(\frac{S_{0}}{K}\right)\right)-\Phi\left(\delta_{-}^{T}\left(\frac{S_{0}}{B}\right)\right)\right) \\
+&+\mathrm{e}^{-r T} K\left(\frac{S_{0}}{B}\right)^{1-2 r / \sigma^{2}}\left(\Phi\left(\delta_{-}^{T}\left(\frac{B^{2}}{K S_{0}}\right)\right)-\Phi\left(\delta_{-}^{T}\left(\frac{B}{S_{0}}\right)\right)\right) 
+\end{aligned}
+$$
+
+
+
+\end{proof}
+
+
+
+\section{Double no-touch option derivation}
+\label{appendix:b}
+
+
+\begin{proof}
+
+We have terminal condition $V(S_T) = 1$ for $L < S_T < B$ and boundary conditions $V(L,t) = V(B,t) = 0$ for $0 \leq t \leq T$.\newline
+The Black-Scholes PDE for the contract value is written:
+\[
+\dfrac{\partial V}{\partial t} + \dfrac{1}{2} \sigma^2 S^2 \dfrac{\partial^2 V}{\partial S^2} + rS \dfrac{\partial V}{\partial S} - rV = 0
+\]
+
+In log-space with $X_t = \log\left(S_t/S_0 \right)$, with the transformation $V(X,t) = e^{\alpha X + \beta (T-t)} U(X,t)$, the convenient $\alpha = -\Tilde{r}/\sigma^2$ and $\beta = -\Tilde{r}/ 2\sigma^2 - r$, $\Tilde{r} = r - \frac{1}{2}\sigma^2$, we get the heat equation:
+\[
+\dfrac{\partial U}{\partial t} + \dfrac{1}{2} \sigma^2 \dfrac{\partial^2 U}{\partial X^2} = 0.
+\]
+
+The conditions stemming from the double no-touch option payoff now are: $U(0,t) = U(H,t) = 0$, with $H=\ln\frac{B}{L}$ for $0 \leq t \leq T$, and terminal condition $U(X,T) = e^{-\alpha X}$.\\
+
+We use a Fourier series ansatz to solve such an equation: $$U(X,t) = \sum_{n=1}^{\infty} A_n(t) \sin \left(\dfrac{n\pi X}{H} \right).$$
+
+Plugging this into the heat equation solved by $U$ gives a first order differential equation verified by the coefficients $A_n$, thus $A_n(t) = a_n \exp \left(\sigma^2 \dfrac{n^2 \pi^2}{2 H^2} t \right)$
+
+To find an expression for the little $a_n$'s, we use the identity: 
+
+$\int_0^H \sin \left(\dfrac{n\pi}{H}\ln \frac{S}{S_{min}}\right) \sin \left(\dfrac{m\pi}{H}\ln \frac{S}{S_{min}}\right) = \dfrac{1}{2}H \delta_{n,m}$, with $\delta_{n,m}$ the Kronecker delta. We find out that for each $m \in \mathbb{N}^{*}$, $$\dfrac{1}{2}a_m \exp \left(\sigma^2 \dfrac{n^2 \pi^2}{2 H^2} t \right) = \dfrac{m \pi H}{\alpha^2 H^2 + m^2 \pi^2} (1 - (-1)^{m}e^{-\alpha H}).$$
+
+Plugging everything back in, we get the theoretical price for a double no-touch barrier under Black-Scholes dynamics:
+
+\[
+V(S,t) = 2\pi \left(\dfrac{S}{S_{min}}\right)^{\alpha} e^{\beta(T-t)} \sum_{n=1}^{\infty} n \left[\dfrac{(1 - (-1)^{m}e^{-\alpha H})}{\alpha^2 H^2 + n^2 \pi^2} \right] \exp \left(-\frac{1}{2}\sigma^2 \dfrac{n^2 \pi^2}{H^2} t \right) \sin \left(\dfrac{n\pi}{H} \ln \frac{S}{S_{min}} \right),
+\]
+
+with $H=\ln(S_{max}/S_{min})$, $\alpha = -\Tilde{r}/\sigma^2$ and $\beta = -\Tilde{r}/ 2\sigma^2 - r$, $\Tilde{r} = r - \frac{1}{2}\sigma^2$.
+
+Here, we are happy as this is (almost, except to notations choices) what is given in \cite{ebenfeld2002analysis}.
+
+\end{proof}
+
+
+\end{appendices}

@@ -1,0 +1,76 @@
+\subsection{Deriving the path-dependent options cost under Black-Scholes}
+
+Let's assume a geometric brownian motion dynamic for the underlying asset: \[dS_t = r S_t dt + \sigma S_t dW_t\]
+
+For all barrier options, an arbitrage argument gives the following parity formula between the prices of barrier options and vanilla call and put options:
+
+\[
+\begin{array}{l}
+C_{\text {up-in }}(t)+C_{\text {up-out }}(t)=\mathrm{e}^{-(T-t) r} \mathbb{E}\left[\left(S_{T}-K\right)^{+} \mid \mathcal{F}_{t}\right] \\
+C_{\text {down-in }}(t)+C_{\text {down-out }}(t)=\mathrm{e}^{-(T-t) r} \mathbb{E}\left[\left(S_{T}-K\right)^{+} \mid \mathcal{F}_{t}\right] \\
+P_{\text {up-in }}(t)+P_{\text {up-out }}(t)=\mathrm{e}^{-(T-t) r} \mathbb{E}\left[\left(K-S_{T}\right)^{+} \mid \mathcal{F}_{t}\right] \\
+P_{\text {down-in }}(t)+P_{\text {down-out }}(t)=\mathrm{e}^{-(T-t) r} \mathbb{E}\left[\left(K-S_{T}\right)^{+} \mid \mathcal{F}_{t}\right]
+\end{array}
+\]
+
+where the price of the European call, resp. put option with strike price $K$ are obtained from the Black-Scholes formula.
+Consequently, in what follows we will only compute the prices of the up-and-out barrier call.
+
+Let's compute the price of the up-and-out barrier call option.
+
+Introducing the maximum of the geometric brownian motion: \[M_{0}^{T}=\max _{0 \leq u \leq T} S_{u}\]
+
+We have the following proposition:
+
+\begin{proposition} When $K \leq B$, the price of the up-and-out barrier call option with maturity $T$, strike price $K$ and (upper) barrier level $B$ is given by:
+
+\[
+\begin{aligned}
+& \mathrm{e}^{-(T-t) r} \mathbb{E}\left[\left(S_{T}-K\right)^{+} \mathbbm{1}_{\left\{M_{0}^{T}<B\right\}} \mid \mathcal{F}_{t}\right] = \\
+& \mathbbm{1}_{\left\{M_{0}^{t}<B\right\}} \mathrm{Bl}\left(S_{t}, K, r, T-t, \sigma\right)-S_{t} \mathbbm{1}_{\left\{M_{0}^{t}<B\right\}} \Phi\left(\delta_{+}^{T-t}\left(\frac{S_{t}}{B}\right)\right) \\
+& -B\left(\frac{B}{S_{t}}\right)^{2 r / \sigma^{2}} \mathbbm{1}_{\left\{M_{0}^{t}<B\right\}}\left(\Phi\left(\delta_{+}^{T-t}\left(\frac{B^{2}}{K S_{t}}\right)\right)-\Phi\left(\delta_{+}^{T-t}\left(\frac{B}{S_{t}}\right)\right)\right) \\
+& +\mathrm{e}^{-(T-t) r} K \mathbbm{1}_{\left\{M_{0}^{t}<B\right\}} \Phi\left(\delta_{-}^{T-t}\left(\frac{S_{t}}{B}\right)\right) \\
+& +\mathrm{e}^{-(T-t) r} K\left(\frac{S_{t}}{B}\right)^{1-2 r / \sigma^{2}} \mathbbm{1}_{\left\{M_{0}^{t}<B\right\}}\left(\Phi\left(\delta_{-}^{T-t}\left(\frac{B^{2}}{K S_{t}}\right)\right)-\Phi\left(\delta_{-}^{T-t}\left(\frac{B}{S_{t}}\right)\right)\right) .
+\end{aligned}
+\]
+
+where
+
+\[
+\delta_{ \pm}^{\tau}(s)=\frac{1}{\sigma \sqrt{\tau}}\left(\log s+\left(r \pm \frac{\sigma^{2}}{2}\right) \tau\right), \quad s>0
+\]
+
+Note that the price of the up-and-out barrier call option vanishes when $B \leq K$.
+
+Note also that as $B \to \infty$, the price of the up-and-out barrier call option converges to the price of the European call option:
+ 
+\[
+\begin{aligned}
+\lim _{B \rightarrow \infty} \mathrm{e}^{-(T-t) r} \mathbb{E}\left[\left(S_{T}-K\right)^{+} \mathbbm{1}_{\left\{M_{0}^{T}<B\right\}} \mid \mathcal{F}_{t}\right] &= \mathrm{e}^{-(T-t) r} \mathbb{E}\left[\left(S_{T}-K\right)^{+} \mid \mathcal{F}_{t}\right] \\
+&= S_{t} \Phi\left(\delta_{+}^{T-t}\left(\frac{S_{t}}{K}\right)\right)-K \Phi\left(\delta_{-}^{T-t}\left(\frac{S_{t}}{K}\right)\right)
+\end{aligned}
+\]
+
+\end{proposition}
+
+
+\begin{proof}
+    See \ref{appendix:a}
+\end{proof}
+
+
+
+
+\begin{proposition}
+    Price of a double no-touch option with lower and upper barriers $S_{min}$, $S_{max}$:
+
+\[
+V(S,t) = 2\pi \left(\dfrac{S}{S_{min}}\right)^{\alpha} e^{\beta(T-t)} \sum_{n=1}^{\infty} n \left[\dfrac{(1 - (-1)^{m}e^{-\alpha H})}{\alpha^2 H^2 + n^2 \pi^2} \right] \exp \left(-\frac{1}{2}\sigma^2 \dfrac{n^2 \pi^2}{H^2} t \right) \sin \left(\dfrac{n\pi}{H} \ln \frac{S}{S_{min}} \right),
+\]
+
+with $H=\ln(S_{max}/S_{min})$, $\alpha = -\Tilde{r}/\sigma^2$ and $\beta = -\Tilde{r}/ 2\sigma^2 - r$, $\Tilde{r} = r - \frac{1}{2}\sigma^2$.
+\end{proposition}
+
+\begin{proof}
+    See \ref{appendix:b}
+\end{proof}

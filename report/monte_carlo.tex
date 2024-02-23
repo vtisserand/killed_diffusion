@@ -1,0 +1,188 @@
+\section{Monte Carlo methods}
+
+Our objective is to estimate $\mathbb{E}\left[\mathbbm{1}_{T < \tau} f(X_T)\right]$, as seen before.
+Let us introduce a more general diffusion than the Black-Scholes model, the Itô diffusion, as used in the article of Emmanuel Gobet:
+% (ajouter la source)!!!!!
+
+Let $\left(X_{t}\right)_{t \geq 0}$ be the Itô diffusion taking its values in $\mathbb{R}^{d}$ defined by
+
+$$
+\begin{aligned}
+X_{t}=x+\int_{0}^{t} B\left(X_{s}\right) d s+\int_{0}^{t} \sigma\left(X_{s}\right) d W_{s}
+\end{aligned}
+$$
+
+where $\left(W_{t}\right)_{t \geq 0}$ is a Brownian motion in $\mathbb{R}^{d^{\prime}}$. Let $\tau:=\inf \left\{t>0: X_{t} \notin D\right\}$ be its first exit time from the open set $D \subset \mathbb{R}^{d}$. 
+
+We need to make assumptions on the regularity of the coefficients $B$ and $\sigma$ in order to ensure the existence and uniqueness of the solution to the SDE. We also need to make assumptions on the boundary of the open set $D$ in order to ensure the existence of the first exit time $\tau$.
+
+In the case of our barrier option, we can take $D = (-\infty, b)$, where $b$ is the barrier level. We can also take $D = (a, +\infty)$, or $D = (a, b)$, where $a$ and $b$ are the lower and upper barriers, respectively, in the case of a double no-touch barrier option.
+
+% Notes personnelles :
+% Introduction : temps d'arrêt de sortie -> comment l'estimer ? discret / continue ... (OK)
+% Jongler avec les hypothèses : bien les retranscrire dans le cas qui nous intéresse où D = (-inf, b) (OK)
+% Présenter les hypothèses H1, H2, H3, H4, et H5-2 (TODO)
+
+Using the theory of Monte Carlo numerical methods for the Stochastic Differential Equation (SDE) with a first exit time, we can estimate the price of a barrier option.
+
+We can use the Euler scheme, which is a simple and efficient method to simulate the diffusion process.
+
+The question remains: shall we use a discrete or continuous Euler scheme? The continuous Euler scheme is more accurate, but it is more difficult to simulate the first exit time from the open set $D$.
+Indeed between two time steps the diffusion can still unfortunately exit the domain.
+
+\subsection{Methods}
+
+\begin{enumerate}
+    \item Discrete Euler scheme
+
+
+To evaluate the expectation of the functional of the diffusion, the simplest way to approximate the process is to use its discrete Euler scheme $\left(\tilde{X}_{t_{i}}\right)_{0 \leq i \leq N}$ with discretization step $T / N$, defined if $t_{i}=i T / N$ is the $i$-th discretization time by
+
+% ajouter l'accolade
+$$ 
+\begin{aligned}
+\tilde{X}_{0} & =x \\
+\tilde{X}_{t_{i+1}} & =\tilde{X}_{t_{i}}+B\left(\tilde{X}_{t_{i}}\right) T / N+\sigma\left(\tilde{X}_{t_{i}}\right)\left(W_{t_{i+1}}-W_{t_{i}}\right)
+\end{aligned}
+$$
+
+The simulation involves simulation $N$ independent Gaussian variables for the increments $\left(W_{t_{i+1}}-W_{t_{i}}\right)_{0 \leq i \leq N-1}$.
+
+    \item Continuous Euler scheme
+
+Introducing a more complex scheme, our goal is to refine the discrete Euler scheme by considering a modified stopping time $\tilde{\tau}_{c}$, which is the first exit time from the open set $D$ for the continuous Euler scheme.
+
+$\left(\tilde{X}_t\right)_{t_{i} \leq t \leq t_{i+1}}$ shall be defined as:
+
+$$
+\begin{aligned}
+\tilde{X}_{t} & = \tilde{X}_{t_{i}}+B\left(\tilde{X}_{t_{i}}\right)\left(t-t_{i}\right)+\sigma\left(\tilde{X}_{t_{i}}\right)\left(W_{t}-W_{t_{i}}\right),
+\text{ for } t_{i} \leq t < t_{i+1},
+\footnote{
+    We must rigorously define a new SDE dynamic for the diffusion $\left(\tilde{X}_t\right)$
+    with the function $\varphi(t)$ introduced in the article:
+    $\tilde{X}_{t}=x+\int_{0}^{t} B\left(\tilde{X}_{\varphi(s)}\right) d s+\int_{0}^{t} \sigma\left(\tilde{X}_{\varphi(s)}\right) d W_{s}$, where $\varphi(t):=\sup \left\{t_{i}: t_{i} \leq t\right\}$. Let $\tilde{\tau}_{c}:=\inf \left\{t: \tilde{X}_{t} \notin D\right\}$ be its first exit time from $D$.
+    We now approximate $\mathbb{E}_{x}\left[\mathbbm{1}_{T<\tau} f\left(X_{T}\right)\right]$ by $\mathbbm{E}_{x}\left[\mathbbm{1}_{T<\tilde{\tau}_{c}} f\left(\tilde{X}_{T}\right)\right]$.
+}
+\end{aligned}
+$$
+
+% footnote: add a footnote explaining that we must define a new SDE dynamic with the phi introduced as the article and give the definition of tau_c
+% $$
+% \begin{equation*}
+% \tilde{X}_{t}=x+\int_{0}^{t} B\left(\tilde{X}_{\varphi(s)}\right) d s+\int_{0}^{t} \sigma\left(\tilde{X}_{\varphi(s)}\right) d W_{s} \tag{4}
+% \end{equation*}
+% $$
+% where $\varphi(t):=\sup \left\{t_{i}: t_{i} \leq t\right\}$. Let $\tilde{\tau}_{c}:=\inf \left\{t: \tilde{X}_{t} \notin D\right\}$ be its first exit time from $D$. We are also interested in studying the approximation of $\mathbb{E}_{x}\left[\mathbbm{1}_{T<\tau} f\left(X_{T}\right)\right]$ by $\mathbb{E}_{x}\left[\mathbbm{1}_{T<\tilde{\tau}_{c}} f\left(\tilde{X}_{T}\right)\right]$.
+
+
+
+Between two time steps, the diffusion can still exit the domain. From a simulation standpoint, Gobet suggests drawing $N$ additional independent Bernoulli variables to simulate if $\left(\tilde{X}_{t}\right)_{0 \leq t \leq T}$ has left $D$ between two discretization times or not. Each parameter involved for the simulation of the Bernoulli variables is related to the quantity
+
+$$
+\mathbb{P}\left(\forall t \in\left[t_{i}, t_{i+1}\right] \tilde{X}_{t} \in D \vert \tilde{X}_{t_{i}}=z_{1}, \tilde{X}_{t_{i+1}}=z_{2}\right):=p\left(z_{1}, z_{2}, T / N\right)
+$$
+
+In the 1-dimensional case, $p\left(z_{1}, z_{2}, \Delta\right)$ is the cumulative of the infimum and supremum of a linear Brownian bridge and has a simple expression\footnote{see \cite{revuz2013continuous}, p. 105, for instance}:
+
+1. if $D=(-\infty, b)$, we have $p\left(z_{1}, z_{2}, \Delta\right)=\mathbbm{1}_{b>z_{1}} \mathbbm{1}_{b>z_{2}}\left(1-\exp \left(-2 \frac{\left(b-z_{1}\right)\left(b-z_{2}\right)}{\sigma^{2}\left(z_{1}\right) \Delta}\right)\right)$;
+2. if $D=(a,+\infty)$, we have $p\left(z_{1}, z_{2}, \Delta\right)=\mathbbm{1}_{z_{1}>a} \mathbbm{1}_{z_{2}>a}\left(1-\exp \left(-2 \frac{\left(a-z_{1}\right)\left(a-z_{2}\right)}{\sigma^{2}\left(z_{1}\right) \Delta}\right)\right)$;
+3. if $D=(a, b)$, we have
+
+$$
+\begin{aligned}
+p\left(z_{1}, z_{2}, \Delta\right)= & \mathbbm{1}_{b>z_{1}>a} \mathbbm{1}_{b>z_{2}>a}\left(1-\sum_{k=-\infty}^{+\infty}\left[\exp \left(-2 \frac{k(b-a)\left(k(b-a)+z_{2}-z_{1}\right)}{\sigma^{2}\left(z_{1}\right) \Delta}\right)\right.\right. \\
+& \left.\left.-\exp \left(-2 \frac{\left(k(b-a)+z_{1}-b\right)\left(k(b-a)+z_{2}-b\right)}{\sigma^{2}\left(z_{1}\right) \Delta}\right)\right]\right) .
+\end{aligned}
+$$
+
+\end{enumerate}
+
+\newpage
+
+\subsection{Theoretical results}
+
+Let us introduce the following (weak) convergence errors for the two respective schemes:
+
+\begin{itemize}
+    \item Continuous Euler Scheme
+
+$$
+\begin{aligned}
+\mathcal{E}_{\mathrm{c}}(f, T, x, N):=\mathbb{E}_{x}\left[\mathbbm{1}_{T<\tilde{\tau}_{c}} f\left(\tilde{X}_{T}\right)\right]-\mathbb{E}_{x}\left[\mathbbm{1}_{T<\tau} f\left(X_{T}\right)\right]
+\end{aligned}
+$$
+
+    \item Discrete Euler Scheme
+
+$$
+\begin{aligned}
+\mathcal{E}_{\mathrm{d}}(f, T, x, N):=\mathbb{E}_{x}\left[\mathbbm{1}_{T<\tilde{\tau}_{d}} f\left(\tilde{X}_{T}\right)\right]-\mathbb{E}_{x}\left[\mathbbm{1}_{T<\tau} f\left(X_{T}\right)\right]
+\end{aligned}
+$$
+\end{itemize}
+
+% as a function of $N$, the number of discretization steps. We first state an easy result, which shows that both errors tend to 0 when $N$ goes to infinity under mild assumptions.
+
+
+We are interested in evaluating the errors $\mathcal{E}_{\mathrm{c}}(f, T, x, N)$ and $\mathcal{E}_{\mathrm{d}}(f, T, x, N)$ as a function of $N$, the number of discretization steps.
+We first state an easy result, which shows that both errors tend to 0 when $N$ goes to infinity under mild assumptions.
+We then provide a more precise result, which gives the rate of convergence of the errors.
+
+\subsubsection{Limit behavior of the weak convergence}
+
+% réecrire sous forme de proposition
+Assume that $B$ and $\sigma$ are globally Lipschitz functions, that $D$ is defined by $D=\left\{x \in \mathbb{R}^{d}: F(x)>0\right\}, \partial D=\left\{x \in \mathbb{R}^{d}: F(x)=0\right\}$ for some globally Lipschitz function $F$. Provided that the condition (C) below is satisfied
+
+$$
+\mathbf{( C )}: \mathbb{P}_{x}\left(\exists t \in[0, T] \quad X_{t} \notin D ; \forall t \in[0, T] \quad X_{t} \in \bar{D}\right)=0
+$$
+
+for all function $f \in C_{b}^{0}(\bar{D}, \mathbb{R})$, we have
+
+$$
+\lim _{N \rightarrow+\infty} \mathcal{E}_{\mathrm{c}}(f, T, x, N)=\lim _{N \rightarrow+\infty} \mathcal{E}_{\mathrm{d}}(f, T, x, N)=0 .
+$$
+
+
+\subsubsection{Order of convergence of the weak convergence error}
+
+Under regularity assumptions on $B, \sigma, D$ and an uniform ellipticity condition, one has
+
+\begin{itemize}
+    \item for the continuous Euler scheme:
+
+$$
+\mathcal{E}_{\mathrm{c}}(f, T, x, N)=C N^{-1}+o\left(N^{-1}\right)
+$$
+
+provided that $f$ is a measurable function with support strictly included in $D$ (Theorem 2.1, see below). The support condition can be weakened if $f$ is smooth enough (Theorem 2.2, see below).
+
+    \item for the discrete Euler scheme:
+
+$$
+\mathcal{E}_{\mathrm{d}}(f, T, x, N)=O\left(N^{-1 / 2}\right)
+$$
+\end{itemize}
+
+\subsubsection{Theorems}
+
+We make some reasonable assumptions on the regularity of the coefficients of the diffusion process, the smoothness of the survival domain, and the payoff function.
+
+These allow us to bound the error functions, at the rate $N^{-1}$ for the continuous scheme and the rate $N^{-1/2}$ for the discrete scheme.
+
+\subsection{Proof sketches}
+
+Introducing $v(t,x):=\mathbb{E}_{x}\left[\mathbbm{1}_{T-t<\tau} f(X_{T-t})\right]$, we break the error into two parts to make appear the process and stopping time from the scheme: $\Tilde{X}$ and $\tilde{\tau}$. The difference between the continuous and discrete errors essentially stems from the fact that Itô's formula is applicable on $v$ in the former scheme but not the latter as discontinuities of $v$ on the boundary of the domain $D$ would lead to jumping spatial derivatives for.\\
+
+For instance: 
+
+\begin{align*}
+\mathcal{E}_{\mathrm{c}}(f, T, x, N)= & \mathbb{E}_{x}\left[\mathbbm{1}_{T<\tilde{\tau}_{c}} f\left(\tilde{X}_{T}\right)\right]-\mathbb{E}_{x}\left[v\left((T-T / N) \wedge \tilde{\tau}_{c}, \tilde{X}_{(T-T / N) \wedge \tilde{\tau}_{c}}\right)\right] \\
+& +\mathbb{E}_{x}\left[v\left((T-T / N) \wedge \tilde{\tau}_{c}, \tilde{X}_{(T-T / N) \wedge \tilde{\tau}_{c}}\right)\right]-\mathbb{E}_{x}\left[v\left(0, \tilde{X}_{0}\right)\right] \\
+:= & C_{1}(N)+C_{2}(N)
+\end{align*}
+
+and $C_1$ will yield a contribution of the order $O(N^{-3/2})$ while $C_2$ will be broken down between two other error terms, one having a dominating contribution of the order $O(N^{-1})$ -- this involves applying Itô's formula and the Bernstein inequality for martingales.
+
+% Citer l'ensemble des lemmes utilisés dans la section 3. Donner les grands résultats uniquement, et ce, à chaque fois qu'il utilise un théorème du cours. Bien mettre en évidence l'aspect discontinue de la fonction v introduite par Gobet, sur laquelle on ne peut pas faire un Itô classique car discontinuité sur le bord du domaine D... (les dérivées spatiales de v présentent un jump) 
