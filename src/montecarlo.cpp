@@ -85,8 +85,8 @@ double price_barrier_call_up_and_out(double S0, double K, double r, double T, do
     return exp(-r * T) * sum / M;
 }
 
-// Double no touch options (Barrier options with two barriers)
-double price_double_no_touch_call(double S0, double K, double r, double T, double sigma, int N, int M, double L, double B)
+// Double no touch options (binary options with two barriers)
+double price_double_no_touch(double S0, double K, double r, double T, double sigma, int N, int M, double L, double B)
 {
     double sum = 0.0;
     for (int i = 0; i < M; i++)
@@ -223,8 +223,8 @@ double price_barrier_call_up_and_out_gobet(double S0, double K, double r, double
     return exp(-r * T) * sum / M;
 }
 
-// Double no touch options (Barrier options with two barriers)
-double price_double_no_touch_call_gobet(double S0, double K, double r, double T, double sigma, int N, int M, double L, double B, int k_limit)
+// Double no touch options (binary options with two barriers)
+double price_double_no_touch_gobet(double S0, double K, double r, double T, double sigma, int N, int M, double L, double B, int k_limit)
 {
     bool verbose = false; // activate this for the debug.cpp file (to generate the debug_dnt.csv file)
     std::ofstream file("debug_dnt.csv", std::ios_base::app);

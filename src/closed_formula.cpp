@@ -56,13 +56,23 @@ double bs_barrier_call_up_and_out(
     );
 }
 
-double bs_double_no_touch_call(
-    double S0, double K, double r, double T, double sigma, double L, double B)
-{
-    if (B <= S0 || S0 <= L)
-    {
-        return 0.0;
+double bs_dnt(double S0, double K, double r, double T, double sigma, double L, double B) {
+    if (S0 < L || S0 > B) {
+        return 0;
     }
-    return (bs_barrier_call_up_and_out(S0, K, r, T, sigma, B)
-            - bs_barrier_call_up_and_out(S0, K, r, T, sigma, L));
+    
+    double alpha = 1/2.0 - r / (sigma * sigma);
+    double beta = r + 0.5 * sigma * sigma * alpha * alpha;
+    double H = log(B / L);
+    
+    double sum_value = 0;
+    for (int n = 1; n <= 99; ++n) {
+        double term1 = (1 - pow(-1, n) * exp(-alpha * H)) / (alpha * alpha * H * H + n * n * M_PI * M_PI);
+        double term2 = exp(-0.5 * sigma * sigma * (n * n * M_PI * M_PI / (H * H)) * T);
+        double term3 = sin(n * M_PI / H * log(S0 / L));
+        sum_value += n * term1 * term2 * term3;
+    }
+    
+    double result = 2 * M_PI * pow(S0 / L, alpha) * exp(-beta * T) * sum_value;
+    return result;
 }

@@ -23,6 +23,10 @@ PYBIND11_MODULE(killed_diffusion, m) {
           "Calculate double no-touch call option price using Black-Scholes formula",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("L"), py::arg("B"));
 
+      m.def("bs_dnt", &bs_dnt, 
+          "Calculate double no-touch option price using Black-Scholes formula",
+          py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("L"), py::arg("B"));
+
     // Add additional functions from montecarlo.hpp with argument names and docstrings
     m.def("generate_ST", &generate_ST, 
           "Generate ST in a Geometric Brownian Motion model",
@@ -40,8 +44,8 @@ PYBIND11_MODULE(killed_diffusion, m) {
           "Price barrier call option using Monte Carlo simulation",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("N"), py::arg("M"), py::arg("B"));
 
-    m.def("price_double_no_touch_call", &price_double_no_touch_call, 
-          "Price double no-touch call option using Monte Carlo simulation",
+    m.def("price_double_no_touch", &price_double_no_touch, 
+          "Price double no-touch option using Monte Carlo simulation",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("N"), py::arg("M"), py::arg("L"), py::arg("B"));
 
     m.def("probability_brownian_bridge_hit", &probability_brownian_bridge_hit, 
@@ -52,7 +56,7 @@ PYBIND11_MODULE(killed_diffusion, m) {
           "Price barrier call option using Gobet method",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("N"), py::arg("M"), py::arg("B"), py::arg("k_limit"));
 
-    m.def("price_double_no_touch_call_gobet", &price_double_no_touch_call_gobet, 
-          "Price double no-touch call option using Gobet method",
+    m.def("price_double_no_touch_gobet", &price_double_no_touch_gobet, 
+          "Price double no-touch option using Gobet method",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("N"), py::arg("M"), py::arg("L"), py::arg("B"), py::arg("k_limit"));
 }
