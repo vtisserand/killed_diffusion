@@ -9,8 +9,7 @@ We implement a discrete and a continuous Euler scheme to compute payoffs of the 
 The code essentially lies as C++ files in the src folder. There is a wrapper file that allows to expose functions to Python and use them in a more convenient environment (e.g. Jupyter notebooks). The plots are generated through nbs/main.ipynb while the report can be found at report/main.pdf
 
 # TO-DOs
-- [ ] Add the new theoretical price of a Black-Scholes double no touch to closed_formula.cpp (very important); see main.ipynb
-- [ ] Improve the compatibility of the pybind11 wrapping module to Linux/Windows users -> use a fancy CMake setup and detail the?
+- [ ] Improve the compatibility of the pybind11 wrapping module to Linux/Windows users -> use a fancy CMake setup and detail the instructions?
 - [ ] To go further: Monte Carlo pricing for higher dimension (d>1) barriers -> try out more complex ones (breaking H1, H2, ... regularity conditions; cf. Gobet's paper)
 
 
