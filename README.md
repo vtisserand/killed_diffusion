@@ -9,11 +9,8 @@ We implement a discrete and a continuous Euler scheme to compute payoffs of the 
 The code essentially lies as C++ files in the src folder. There is a wrapper file that allows to expose functions to Python and use them in a more convenient environment (e.g. Jupyter notebooks). The plots are generated through nbs/main.ipynb while the report can be found at report/main.pdf
 
 # TO-DOs
-
-- [ ] Vérifier si p(z1, z2, T/N) ou 1-p(z1, z2, T/N) pour les options barrières
-- [ ] Illustrer la convergence de nos prix Monte Carlo vers ces formules fermées (quand la closed formula existe) (faible + forte ?)
-- [ ] Dev une fonction générique pour un drift / diffusion plus complexe que Black Scholes mais toujours similaire à l'article (cf. la dynamique générale posée par Gobet en introduction)
-- [ ] Pour aller + loin : Dev du pricing Monte Carlo pour des barrières en dimension supérieure à 1 -> tester des barrières plus complexes (cf. l'article de Gobet et ses conditions H1, whatever...) (approfondissement ?)
+- [ ] Improve the compatibility of the pybind11 wrapping module to Linux/Windows users -> use a fancy CMake setup and detail the?
+- [ ] To go further: Monte Carlo pricing for higher dimension (d>1) barriers -> try out more complex ones (breaking H1, H2, ... regularity conditions; cf. Gobet's paper)
 
 
 # Compiling the dynamic library
