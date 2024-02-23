@@ -1,6 +1,6 @@
 # Killed diffusion and pricing path-dependent options
 
-We implement a discrete and a continuous Euler scheme to compute payoffs of the form $$\mathbb{E}\left[\mathbb{1}_{T < \tau} f(X_T)\right],$$ where $$\tau \coloneqq \inf \{{t > 0 : X_t \notin D \}}$$ is a stopping time for when the diffusion exits a domain $D$.
+We implement a discrete and a continuous Euler scheme to compute payoffs of the form $$\mathbb{E}\left[\mathbb{1}_{T < \tau} f(X_T)\right],$$ where $$\tau \coloneqq \inf {{t > 0 : X_t \notin D }}$$ is a stopping time for when the diffusion exits a domain $D$.
 
 ![Call up-and-out price under Black-Scholes](report/img/cuo_mc.png)
 
