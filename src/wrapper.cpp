@@ -55,4 +55,16 @@ PYBIND11_MODULE(killed_diffusion, m) {
     m.def("price_double_no_touch_call_gobet", &price_double_no_touch_call_gobet, 
           "Price double no-touch call option using Gobet method",
           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("sigma"), py::arg("N"), py::arg("M"), py::arg("L"), py::arg("B"), py::arg("k_limit"));
+
+//     m.def("generate_ST_generic", &generate_ST_generic, 
+//           "Generate ST in a Geometric Brownian Motion model with generic drift and volatility",
+//           py::arg("S0"), py::arg("drift"), py::arg("T"), py::arg("sigma"), py::arg("N"));
+
+//     m.def("generate_path_generic", &generate_path_generic,
+//           "Generate a stock price using the Geometric Brownian Motion model with generic drift and volatility",
+//           py::arg("S0"), py::arg("drift"), py::arg("T"), py::arg("sigma"), py::arg("N"));
+
+//     m.def("price_option_generic", &price_option_generic,
+//           "Price option using Monte Carlo simulation with generic drift and volatility",
+//           py::arg("S0"), py::arg("K"), py::arg("r"), py::arg("T"), py::arg("drift"), py::arg("sigma"), py::arg("N"), py::arg("M"), py::arg("L"), py::arg("B"), py::arg("k_limit"), py::arg("f"), py::arg("gobet"));
 }

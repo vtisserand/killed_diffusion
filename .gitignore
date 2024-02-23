@@ -47,3 +47,6 @@ debug_*
 
 # misc
 nbs/.ipynb_checkpoints/
+
+# build files (CMake, etc.)
+build/
